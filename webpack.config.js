@@ -1,12 +1,10 @@
 var path = require('path')
+const merge = require('webpack-merge') 
 var webpack = require('webpack')
 
-module.exports = {
-  entry: './src/main.js',
-  output: {
-    path: path.resolve(__dirname, './dist'),
-    publicPath: '/dist/',
-    filename: 'build.js'
+const commonConfig = {
+	output: {
+    path: path.resolve(__dirname, './dist/'), 
   },
   module: {
     rules: [
@@ -39,40 +37,43 @@ module.exports = {
       }
     ]
   },
-  resolve: {
-    alias: {
-      'vue$': 'vue/dist/vue.esm.js'
-    },
-    extensions: ['*', '.js', '.vue', '.json']
+  externals: {
+    moment: 'moment'
   },
-  devServer: {
-    historyApiFallback: true,
-    noInfo: true,
-    overlay: true
-  },
-  performance: {
-    hints: false
-  },
-  devtool: '#eval-source-map'
-}
-
-if (process.env.NODE_ENV === 'production') {
-  module.exports.devtool = '#source-map'
-  // http://vue-loader.vuejs.org/en/workflow/production.html
-  module.exports.plugins = (module.exports.plugins || []).concat([
-    new webpack.DefinePlugin({
-      'process.env': {
-        NODE_ENV: '"production"'
-      }
-    }),
-    new webpack.optimize.UglifyJsPlugin({
-      sourceMap: true,
+  plugins: [
+    new webpack.optimize.UglifyJsPlugin( {
+      minimize : true,
+      sourceMap : false,
+      mangle: true,
       compress: {
         warnings: false
       }
-    }),
-    new webpack.LoaderOptionsPlugin({
-      minimize: true
     })
-  ])
+  ]
 }
+
+module.exports = [
+
+	// Config 1: For browser environment
+  merge(commonConfig, {
+  	entry: path.resolve(__dirname + '/src/plugin.js'),
+    output: {
+      filename: 'vue-clock.min.js',
+    }
+  }),
+
+  // Config 2: For Node-based development environments
+  merge(commonConfig, {
+    entry: path.resolve(__dirname + '/src/Clock.vue'),
+    output: {
+      filename: 'vue-clock.js',
+      libraryTarget: 'umd',
+
+      // These options are useful if the user wants to load the module with AMD
+      library: 'vue-clock',
+      umdNamedDefine: true
+    }
+  })
+]
+
+ 
