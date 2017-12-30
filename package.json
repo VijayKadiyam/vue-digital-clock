@@ -1,8 +1,8 @@
 {
   "name": "vue-digi-clock",
-  "description": "Basic Digital Clock", 
+  "description": "Basic Digital Clock",
   "main": "dist/vue-clock.js",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "Vijaykumar Kadiyam",
   "license": "MIT",
   "private": false,
